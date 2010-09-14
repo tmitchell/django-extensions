@@ -150,6 +150,7 @@ def generate_dot(app_labels, **kwargs):
     all_applications = kwargs.get('all_applications', False)
     use_subgraph = kwargs.get('group_models', False)
     verbose_names = kwargs.get('verbose_names', False)
+    prefix_labels = kwargs.get('prefix_labels', False)
 
     dot = head_template
 
@@ -197,7 +198,10 @@ def generate_dot(app_labels, **kwargs):
             if verbose_names and appmodel._meta.verbose_name:
                 model['label'] = appmodel._meta.verbose_name
             else:
-                model['label'] = model['name']                
+                model['label'] = model['name']
+
+            if prefix_labels:
+                model['label'] = "%s.%s" % (app.__name__, model['label'])
             
             # model attributes
             def add_attributes(field):
@@ -300,6 +304,8 @@ def main():
             kwargs['include_models'] = arg.split(',')
         if opt in ("-n", "--verbose-names"):
             kwargs['verbose_names'] = True
+        if opt in ("-p", "--prefix_labels"):
+            kwargs['prefix_labels'] = True
 
 
     if not args and not kwargs.get('all_applications', False):
